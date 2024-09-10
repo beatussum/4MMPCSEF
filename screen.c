@@ -94,3 +94,11 @@ void scroll()
 
 	set_cursor(col, line);
 }
+
+void console_putbytes(const char *__str, size_t __len)
+{
+	for (; __len != 0; --__len) {
+		parse_char(*__str);
+		++__str;
+	}
+}

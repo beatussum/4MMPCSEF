@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include "inttypes.h"
+#include "stddef.h"
 
 static uint16_t *const first_cell = (uint16_t *) 0xB8000;
 
@@ -19,5 +20,6 @@ void clear_screen();
 void set_cursor(uint32_t __line, uint32_t __col);
 void parse_char(char __c);
 void scroll();
+void console_putbytes(const char *__str, size_t __len);
 
 #endif // SCREEN_H
