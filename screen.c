@@ -1,98 +1,111 @@
 #include "screen.h"
 #include "cpu.h"
 
+#include <stddef.h>
 #include <string.h>
 
-static uint32_t cursor = 0;
+static uint32_t cursor_column = 0;
+static uint32_t cursor_line   = 0;
 
 void clear_screen()
 {
-	uint16_t *begin = (uint16_t *) 0xB8000;
-	uint16_t *end   = begin + 2000;
+	uint16_t *begin = first_cell;
+	uint16_t *end   = begin + cell_number;
 
 	for (; begin != end; ++begin) {
-		((uint8_t *) begin)[0] = 0;
+		((char *) begin)[0] = 0;
 	}
 }
 
+
 void set_cursor(uint32_t __line, uint32_t __col)
 {
-	cursor = __col + __line * 80;
+	cursor_column = __col;
+	cursor_line   = __line;
 
-	outb(0x0F, 0x3D4);
-	outb((uint8_t) (cursor & 0xFF), 0x3D5);
-	outb(0x0E, 0x3D4);
-	outb((uint8_t) ((cursor >> 8) & 0xFF), 0x3D5);
+	uint32_t pos = __col + __line * column_number;
+
+	outb(cursor_cmd_low, cursor_cmd_port);
+	outb((uint8_t) (pos & 0xFF), cursor_data_port);
+	outb(cursor_cmd_high, cursor_cmd_port);
+	outb((uint8_t) ((pos >> 8) & 0xFF), cursor_data_port);
+}
+
+void put_newline()
+{
+	if (cursor_line != line_number) {
+		++cursor_line;
+	} else {
+		scroll();
+	}
+
+	cursor_column = 0;
+
+	set_cursor(cursor_line, cursor_column);
 }
 
 void parse_char(char __c)
 {
-	uint32_t col  = cursor % 80;
-	uint32_t line = cursor / 80;
-
 	switch (__c) {
 		case '\b':
-			if (col != 0) {
-				--col;
+			if (cursor_column != 0) {
+				--cursor_column;
 			}
 
 			break;
 		case '\t':
-			if (col > 79) {
-				parse_char('\n');
+			if (cursor_column >= (column_number / tab_width)) {
+				put_newline();
 			}
 
-			col = 8 * ((col / 8) + 1);
+			cursor_column =
+				tab_width * ((cursor_column / tab_width) + 1);
 
 			break;
 		case '\n':
-			if (line != 25) {
-				++line;
-			} else {
-				scroll();
-			}
-
-			col = 0;
+			put_newline();
 
 			break;
 		case '\f':
 			clear_screen();
 
-			col = 0;
-			line = 0;
+			cursor_column = 0;
+			cursor_line   = 0;
 
 			break;
 		case '\r':
-			col = 0;
+			cursor_column = 0;
 
 			break;
 		default:
-			if (col == 25) {
-				parse_char('\n');
+			if (cursor_line == line_number) {
+				put_newline();
 			}
 
-			write_char(line, col, __c);
-			++col;
+			write_char(cursor_line, cursor_column, __c);
+			++cursor_column;
 
 			break;
 	}
 
-	set_cursor(line, col);
+	set_cursor(cursor_line, cursor_column);
 }
 
 void scroll()
 {
-	uint32_t col  = cursor % 80;
-	uint32_t line = cursor / 80;
+	memmove(
+		ptr_mem(0, 0),
+		ptr_mem(1, 0),
+		2 * (line_number - 1) * column_number
+	);
 
-	memmove(ptr_mem(0, 0), ptr_mem(1, 0), 3840);
-	memset(ptr_mem(25, 0), 0, 1600);
+	memset(ptr_mem(25, 0), 0, 2 * column_number);
 
-	if (line != 0) {
-		--line;
+	if (cursor_line != 0) {
+		--cursor_line;
 	}
 
-	set_cursor(col, line);
+	set_cursor(cursor_column, cursor_line);
 }
 
 void console_putbytes(const char *__str, size_t __len)
