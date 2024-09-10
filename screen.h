@@ -17,5 +17,6 @@ static inline void write_char(uint32_t __line, uint32_t __col, char __c)
 
 void clear_screen();
 void set_cursor(uint32_t __line, uint32_t __col);
+void parse_char(char __c);
 
 #endif // SCREEN_H
