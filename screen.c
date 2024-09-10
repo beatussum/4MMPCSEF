@@ -1,6 +1,8 @@
 #include "screen.h"
 #include "cpu.h"
 
+#include <string.h>
+
 static uint32_t cursor = 0;
 
 void clear_screen()
@@ -76,4 +78,19 @@ void parse_char(char __c)
 	}
 
 	set_cursor(line, col);
+}
+
+void scroll()
+{
+	uint32_t col  = cursor % 80;
+	uint32_t line = cursor / 80;
+
+	memmove(ptr_mem(0, 0), ptr_mem(1, 0), 3840);
+	memset(ptr_mem(25, 0), 0, 1600);
+
+	if (line != 0) {
+		--line;
+	}
+
+	set_cursor(col, line);
 }
