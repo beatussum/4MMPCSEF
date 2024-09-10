@@ -10,4 +10,9 @@ static inline uint16_t *ptr_mem(uint32_t __line, uint32_t __col)
 	return first_cell + __line * 80 + __col;
 }
 
+static inline void write_char(uint32_t __line, uint32_t __col, char __c)
+{
+	((uint8_t *) ptr_mem(__line, __col))[0] = __c;
+}
+
 #endif // SCREEN_H
