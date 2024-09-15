@@ -1,8 +1,7 @@
 #include "screen.h"
-#include "cpu.h"
 
-#include <stddef.h>
-#include <string.h>
+#include "cpu.h"
+#include "string.h"
 
 static uint32_t cursor_column = 0;
 static uint32_t cursor_line   = 0;
@@ -17,18 +16,12 @@ void clear_screen()
 	}
 }
 
-
-void set_cursor(uint32_t __line, uint32_t __col)
+void console_putbytes(const char *__str, size_t __len)
 {
-	cursor_column = __col;
-	cursor_line   = __line;
-
-	uint32_t pos = __col + __line * column_number;
-
-	outb(cursor_cmd_low, cursor_cmd_port);
-	outb((uint8_t) (pos & 0xFF), cursor_data_port);
-	outb(cursor_cmd_high, cursor_cmd_port);
-	outb((uint8_t) ((pos >> 8) & 0xFF), cursor_data_port);
+	for (; __len != 0; --__len) {
+		parse_char(*__str);
+		++__str;
+	}
 }
 
 void put_newline()
@@ -108,10 +101,15 @@ void scroll()
 	set_cursor(cursor_column, cursor_line);
 }
 
-void console_putbytes(const char *__str, size_t __len)
+void set_cursor(uint32_t __line, uint32_t __col)
 {
-	for (; __len != 0; --__len) {
-		parse_char(*__str);
-		++__str;
-	}
+	cursor_column = __col;
+	cursor_line   = __line;
+
+	uint32_t pos = __col + __line * column_number;
+
+	outb(cursor_cmd_low, cursor_cmd_port);
+	outb((uint8_t) (pos & 0xFF), cursor_data_port);
+	outb(cursor_cmd_high, cursor_cmd_port);
+	outb((uint8_t) ((pos >> 8) & 0xFF), cursor_data_port);
 }
