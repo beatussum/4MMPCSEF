@@ -74,7 +74,7 @@ void put_newline();
 
 static inline uint16_t *ptr_mem(uint32_t __line, uint32_t __col)
 {
-	return first_cell + __line * column_number + __col;
+    return first_cell + __line * column_number + __col;
 }
 
 /**
@@ -104,7 +104,7 @@ void set_cursor(uint32_t __line, uint32_t __col);
 
 static inline void write_char(uint32_t __line, uint32_t __col, char __c)
 {
-	((char *) ptr_mem(__line, __col))[0] = __c;
+    ((char *) ptr_mem(__line, __col))[0] = __c;
 }
 
 #endif // CONSOLE_H
