@@ -1,4 +1,4 @@
-#include "screen.h"
+#include "console.h"
 
 #include "cpu.h"
 #include "string.h"
@@ -16,7 +16,7 @@ void clear_screen()
 	}
 }
 
-void console_putbytes(const char *__str, size_t __len)
+void console_putbytes(const char *__str, int __len)
 {
 	for (; __len != 0; --__len) {
 		put_char(*__str);
