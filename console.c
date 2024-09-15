@@ -92,13 +92,17 @@ void scroll()
         2 * (line_number - 1) * column_number
     );
 
-    memset(ptr_mem(25, 0), 0, 2 * column_number);
+    uint16_t *end = ptr_mem(24, 80);
+
+    for (uint16_t *begin = ptr_mem(24, 0); begin != end; ++begin) {
+        ((char *) begin)[0] = 0;
+    }
 
     if (cursor_line != 0) {
         --cursor_line;
     }
 
-    set_cursor(cursor_column, cursor_line);
+    set_cursor(cursor_line, cursor_column);
 }
 
 void set_cursor(uint32_t __line, uint32_t __col)
