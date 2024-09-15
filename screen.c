@@ -19,7 +19,7 @@ void clear_screen()
 void console_putbytes(const char *__str, size_t __len)
 {
 	for (; __len != 0; --__len) {
-		parse_char(*__str);
+		put_char(*__str);
 		++__str;
 	}
 }
@@ -37,7 +37,7 @@ void put_newline()
 	set_cursor(cursor_line, cursor_column);
 }
 
-void parse_char(char __c)
+void put_char(char __c)
 {
 	switch (__c) {
 		case '\b':

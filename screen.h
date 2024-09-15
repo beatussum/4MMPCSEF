@@ -52,18 +52,18 @@ void clear_screen();
 void console_putbytes(const char *__str, size_t __len);
 
 /**
- * @brief Put a new line after the cursor
- */
-
-void put_newline();
-
-/**
- * @brief Parse a character and put it after the cursor
+ * @brief Put a character after the cursor
  *
  * @param[in] __c The character to parse
  */
 
-void parse_char(char __c);
+void put_char(char __c);
+
+/**
+ * @brief Put a new line after the cursor
+ */
+
+void put_newline();
 
 /**
  * @brief Get the cell at the given position
