@@ -32,5 +32,12 @@ void write_time(time_t __time)
     __time         -= minutes * 60;
 
     set_cursor(0, 0);
-    printf("%*" PRIi32 ".4d:%.2d:%.2d", column_number, hours, minutes, __time);
+
+    printf(
+        "%*.4" PRIi32 ":%.2" PRIi32 ":%.2" PRIi32,
+        column_number - 1 - 2 - 1 - 2,
+        hours,
+        minutes,
+        __time
+    );
 }
