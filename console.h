@@ -22,14 +22,28 @@
 #include "inttypes.h"
 #include "stddef.h"
 
+/*************/
+/* CONSTANTS */
+/*************/
+
+/**
+ * @brief A pointer to the first cell
+ */
+
+static uint16_t *const first_cell = (uint16_t *) 0xB8000;
+
+/* CURSOR PORTS */
+
 static const uint16_t cursor_cmd_port  = 0x3D4; ///< The cursor command port
 static const uint16_t cursor_data_port = 0x3D5; ///< The cursor data port
+
+/* CURSOR COMMANDS */
 
 /**
  * @brief Set the low byte of the cursor position
  */
 
-static const uint8_t cursor_cmd_low  = 0x0F;
+static const uint8_t cursor_cmd_low = 0x0F;
 
 /**
  * @brief Set the high byte of the cursor position
@@ -37,11 +51,7 @@ static const uint8_t cursor_cmd_low  = 0x0F;
 
 static const uint8_t cursor_cmd_high = 0x0E;
 
-/**
- * @brief A pointer to the first cell
- */
-
-static uint16_t *const first_cell = (uint16_t *) 0xB8000;
+/* CONSOLE DIMENSIONS */
 
 static const uint32_t tab_width = 8; ///< The length of a tabulation character
 
@@ -54,34 +64,15 @@ static const uint32_t line_number   = 25; ///< The number of lines
 
 static const uint32_t cell_number = column_number * line_number;
 
+/*************/
+/* FUNCTIONS */
+/*************/
+
 /**
  * @brief Clear the screen
  */
 
 void clear_screen();
-
-/**
- * @brief Put bytes after the cursor
- *
- * @param[in] __str The string to print
- * @param[in] __len The length (without the null character) of the string
- */
-
-void console_putbytes(const char *__str, int __len);
-
-/**
- * @brief Put a character after the cursor
- *
- * @param[in] __c The character to parse
- */
-
-void put_char(char __c);
-
-/**
- * @brief Put a new line after the cursor
- */
-
-void put_newline();
 
 /**
  * @brief Get the cell at the given position
@@ -111,6 +102,31 @@ void scroll();
  */
 
 void set_cursor(uint32_t __line, uint32_t __col);
+
+/* PRINTING */
+
+/**
+ * @brief Put bytes after the cursor
+ *
+ * @param[in] __str The string to print
+ * @param[in] __len The length (without the null character) of the string
+ */
+
+void console_putbytes(const char *__str, int __len);
+
+/**
+ * @brief Put a character after the cursor
+ *
+ * @param[in] __c The character to parse
+ */
+
+void put_char(char __c);
+
+/**
+ * @brief Put a new line after the cursor
+ */
+
+void put_newline();
 
 /**
  * @brief Write a character at a specific position
