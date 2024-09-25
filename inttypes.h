@@ -28,6 +28,9 @@ typedef unsigned int uint32_t;
 typedef signed long long int64_t;
 typedef unsigned long long uint64_t;
 
+typedef int intptr_t;
+typedef unsigned int uintptr_t;
+
 #define PRIu8 "uhh"
 #define PRIu16 "uh"
 #define PRIu32 "u"
