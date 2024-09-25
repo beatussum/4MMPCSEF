@@ -20,6 +20,7 @@
 #define INTERRUPT_H
 
 #include "inttypes.h"
+#include "stdbool.h"
 #include "stddef.h"
 
 /**
@@ -38,11 +39,21 @@ typedef struct {
 
 typedef void (*isr)(); ///< An interrupt service routine
 
+/*************/
+/* CONSTANTS */
+/*************/
+
+static const uint8_t irq_mask_port = 0x21; ///< The port used to mask IRQ
+
 /**
  * @brief A pointer the first entry of the ISR vector
  */
 
 static isr_entry *const isr_vector = (isr_entry *) 0x1000;
+
+/*************/
+/* FUNCTIONS */
+/*************/
 
 /**
  * @brief Set an ISR to the given entry
@@ -52,5 +63,16 @@ static isr_entry *const isr_vector = (isr_entry *) 0x1000;
  */
 
 void init_isr(size_t __entry, isr __isr);
+
+/**
+ * @brief Mask or unmask the given IRQ
+ *
+ * @param[in] __irq The IRQ to mask or unmask
+ *
+ * @param[in] __mask If `true`, the IRQ is masked; otherwise, the IRQ is
+ * unmasked
+ */
+
+void mask_irq(size_t __irq, bool __mask);
 
 #endif // INTERRUPT_H

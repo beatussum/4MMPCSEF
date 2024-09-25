@@ -17,6 +17,8 @@
 
 
 #include "interrupt.h"
+
+#include "cpu.h"
 #include "segment.h"
 
 void init_isr(size_t __entry, isr __isr)
@@ -25,4 +27,17 @@ void init_isr(size_t __entry, isr __isr)
         .first = (KERNEL_CS << 16) & ((intptr_t) __isr & 0xFFFF),
         .second = ((intptr_t) __isr & 0xFFFF0000) & 0x8E00
     };
+}
+
+void mask_irq(size_t __irq, bool __mask)
+{
+    uint8_t vector = inb(irq_mask_port);
+
+    if (__mask) {
+        vector |= 1 << __irq;
+    } else {
+        vector &= ~(1 << __irq);
+    }
+
+    outb(vector, irq_mask_port);
 }
