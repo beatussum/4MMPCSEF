@@ -17,18 +17,18 @@
 
 
 #include "console.h"
-#include "cpu.h"
+#include "interrupt.h"
+#include "time.h"
 
 void kernel_start(void)
 {
     clear_screen();
-    set_cursor(0, 0);
-    console_putbytes("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii", 100);
-    scroll();
+    set_clock_frequency(50);
+    init_isr(32, &update_run_time_isr_wrapper);
+    mask_irq(0, false);
+    sti();
 
-    // On ne doit jamais sortir de kernel_start
-    while (1) {
-        hlt(); //< Cette fonction arrete le processeur
+    while (true) {
+        write_run_time();
     }
 }
-

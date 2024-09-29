@@ -19,7 +19,31 @@
 #include "time.h"
 
 #include "console.h"
+#include "cpu.h"
 #include "debug.h"
+#include "interrupt.h"
+
+static time_t run_time = 0;
+
+void set_clock_frequency(uint16_t __frequency)
+{
+    uint16_t value = clock_quartz_frequency / __frequency;
+
+    outb(clock_cmd_set, clock_cmd_port);
+    outb(value & 0xFF, clock_data_port);
+    outb((value >> 8) & 0xFF, clock_data_port);
+}
+
+void update_run_time_isr()
+{
+    interrupt_acknowledge();
+    run_time += 20;
+}
+
+void write_run_time()
+{
+    write_time(run_time);
+}
 
 void write_time(time_t __time)
 {
@@ -31,13 +55,25 @@ void write_time(time_t __time)
     time_t minutes  = __time / 60;
     __time         -= minutes * 60;
 
-    set_cursor(0, 0);
+    char buffer[11];
 
-    printf(
-        "%*.4" PRIi32 ":%.2" PRIi32 ":%.2" PRIi32,
-        column_number - 1 - 2 - 1 - 2,
-        hours,
-        minutes,
-        __time
-    );
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-overflow"
+
+    buffer[10] = '\0';
+    sprintf(buffer, "%.4" PRIi32, hours);
+    buffer[4] = ':';
+    sprintf(buffer + 5, "%.2" PRIi32, minutes);
+    buffer[7] = ':';
+    sprintf(buffer + 8, "%.2" PRIi32, __time);
+
+    #pragma GCC diagnostic pop
+
+    const char *end = buffer + 11;
+    uint32_t col    = column_number - 10;
+
+    for (const char *i = buffer; i != end; ++i) {
+        write_char(0, col, *i);
+        ++col;
+    }
 }

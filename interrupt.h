@@ -19,6 +19,7 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
+#include "cpu.h"
 #include "inttypes.h"
 #include "stdbool.h"
 #include "stddef.h"
@@ -43,7 +44,11 @@ typedef void (*isr)(); ///< An interrupt service routine
 /* CONSTANTS */
 /*************/
 
-static const uint8_t irq_mask_port = 0x21; ///< The port used to mask IRQ
+/**
+ * @brief The command used to acknowledge an interrupt
+ */
+
+static const uint8_t irq_cmd_ack = 0x20;
 
 /**
  * @brief A pointer the first entry of the ISR vector
@@ -51,9 +56,28 @@ static const uint8_t irq_mask_port = 0x21; ///< The port used to mask IRQ
 
 static isr_entry *const isr_vector = (isr_entry *) 0x1000;
 
+/* PORTS */
+
+/**
+ * @brief The port used to acknowledge an interrupt
+ */
+
+static const uint8_t irq_ack_port = 0x20;
+
+static const uint8_t irq_mask_port = 0x21; ///< The port used to mask IRQ
+
 /*************/
 /* FUNCTIONS */
 /*************/
+
+/**
+ * @brief Acknowledge an interrupt
+ */
+
+static inline void interrupt_acknowledge()
+{
+    outb(irq_cmd_ack, irq_ack_port);
+}
 
 /**
  * @brief Set an ISR to the given entry

@@ -18,14 +18,13 @@
 
 #include "interrupt.h"
 
-#include "cpu.h"
 #include "segment.h"
 
 void init_isr(size_t __entry, isr __isr)
 {
     isr_vector[__entry] = (isr_entry) {
-        .first = (KERNEL_CS << 16) & ((intptr_t) __isr & 0xFFFF),
-        .second = ((intptr_t) __isr & 0xFFFF0000) & 0x8E00
+        .first = (KERNEL_CS << 16) | ((intptr_t) __isr & 0xFFFF),
+        .second = ((intptr_t) __isr & 0xFFFF0000) | 0x8E00
     };
 }
 
