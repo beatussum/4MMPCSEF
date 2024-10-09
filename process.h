@@ -22,6 +22,10 @@
 #include "inttypes.h"
 
 enum {
+    process_map_length = 2 ///< The length of the process map
+};
+
+enum {
     process_name_length     = 32, ///< The length of a process name
     process_register_number = 5,  ///< The number of registers to store
     process_stack_length    = 512 ///< The stack length to store
@@ -53,5 +57,7 @@ typedef struct {
 
     uint32_t stack[process_stack_length]; ///< The stack to store
 } process;
+
+extern process process_map[process_map_length]; ///< The process map
 
 #endif // PROCESS_H
