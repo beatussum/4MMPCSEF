@@ -18,7 +18,20 @@
 
 #include "console.h"
 #include "interrupt.h"
+#include "stdio.h"
 #include "time.h"
+
+void idle()
+{
+    printf("[idle] I am trying to hand over to proc1...\n");
+}
+
+void proc_one()
+{
+    printf("[proc1] idle left me in charge.\n");
+    printf("[proc1] I am halting the system.\n");
+    hlt();
+}
 
 void kernel_start(void)
 {
