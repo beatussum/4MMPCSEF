@@ -115,7 +115,7 @@ static inline const char* process_name(const process* __process)
  * @return The current running \ref process
  */
 
-const process* process_current();
+process* process_current();
 
 /***********/
 /* ACTIONS */
