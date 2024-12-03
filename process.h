@@ -52,9 +52,9 @@ typedef struct {
      * @brief The registers to store
      */
 
-    uint32_t registers[process_register_number];
+    uintptr_t registers[process_register_number];
 
-    uint32_t stack[process_stack_length]; ///< The stack to store
+    uintptr_t stack[process_stack_length]; ///< The stack to store
 } process;
 
 extern process process_map[process_map_length]; ///< The process map
