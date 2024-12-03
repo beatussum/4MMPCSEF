@@ -58,10 +58,22 @@ typedef struct {
 } process;
 
 /**
+ * @brief The constructor of \ref process
+ *
+ * @param[in] __pid The PID of the \ref process
+ * @param[in] __name The name of the \ref process
+ * @param[in] __callback The callback to use
+ *
+ * @return A constructed \ref process
+ */
+
+process process_create(int8_t __pid, const char* __name, void (*__callback)());
+
+/**
  * @brief Switches from an old context to a new one
  *
- * @param __old The old context
- * @param __new The new context
+ * @param[out] __old The old context
+ * @param[in] __new The new context
  */
 
 void ctx_sw(uintptr_t* __old, uintptr_t* __new);

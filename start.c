@@ -45,19 +45,8 @@ void proc_one()
 
 void kernel_start(void)
 {
-    process_map[0] = (process) { .pid = 1, .name = "idle()" };
-
-    process_map[0].registers[1] =
-        (uintptr_t) &process_map[0].stack[process_stack_length - 1];
-
-    process_map[0].stack[process_stack_length - 1] = (uintptr_t) &idle;
-
-    process_map[1] = (process) { .pid = 2, .name = "proc_one()" };
-
-    process_map[1].registers[1] =
-        (uintptr_t) &process_map[1].stack[process_stack_length - 1];
-
-    process_map[1].stack[process_stack_length - 1] = (uintptr_t) &proc_one;
+    process_map[0] = process_create(1, "idle", &idle);
+    process_map[1] = process_create(2, "proc1", &proc_one);
 
     clear_screen();
     idle();

@@ -19,3 +19,13 @@
 #include "process.h"
 
 process process_map[process_map_length] = {};
+
+process process_create(int8_t __pid, const char* __name, void (*__callback)())
+{
+    process ret = { .pid = __pid, .name = __name };
+
+    ret.registers[1] = (uintptr_t) &ret.stack[process_stack_length - 1];
+    ret.stack[process_stack_length - 1] = (uintptr_t) __callback;
+
+    return ret;
+}
