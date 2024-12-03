@@ -17,13 +17,14 @@
 
 
 #include "console.h"
-#include "interrupt.h"
+#include "cpu.h"
+#include "process.h"
 #include "stdio.h"
-#include "time.h"
 
 void idle()
 {
     printf("[idle] I am trying to hand over to proc1...\n");
+    ctx_sw(process_map[0].registers, process_map[1].registers);
 }
 
 void proc_one()
@@ -35,13 +36,20 @@ void proc_one()
 
 void kernel_start(void)
 {
-    clear_screen();
-    set_clock_frequency(50);
-    init_isr(32, &update_run_time_isr_wrapper);
-    mask_irq(0, false);
-    sti();
+    process_map[0] = (process) { .pid = 1, .name = "idle()" };
 
-    while (true) {
-        write_run_time();
-    }
+    process_map[0].registers[1] =
+        (uintptr_t) &process_map[0].stack[process_stack_length - 1];
+
+    process_map[0].stack[process_stack_length - 1] = (uintptr_t) &idle;
+
+    process_map[1] = (process) { .pid = 2, .name = "proc_one()" };
+
+    process_map[1].registers[1] =
+        (uintptr_t) &process_map[1].stack[process_stack_length - 1];
+
+    process_map[1].stack[process_stack_length - 1] = (uintptr_t) &proc_one;
+
+    clear_screen();
+    idle();
 }
