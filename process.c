@@ -18,7 +18,15 @@
 
 #include "process.h"
 
+/********************/
+/* GLOBAL VARIABLES */
+/********************/
+
 static process* process_map[process_map_length] = {};
+
+/****************/
+/* CONSTRUCTORS */
+/****************/
 
 void process_create(
     process* __process,
@@ -35,11 +43,19 @@ void process_create(
     __process->stack[process_stack_length - 1] = (uintptr_t) __callback;
 }
 
-const process* process_current()
-    { return process_map[0]; }
+/******************************/
+/* GLOBAL GETTERS AND SETTERS */
+/******************************/
 
 void process_add_to_map(size_t __index, process* __process)
     { process_map[__index] = __process; }
+
+const process* process_current()
+    { return process_map[0]; }
+
+/***********/
+/* ACTIONS */
+/***********/
 
 void process_schedule()
 {

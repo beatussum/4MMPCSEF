@@ -22,6 +22,10 @@
 #include "inttypes.h"
 #include "stddef.h"
 
+/*************/
+/* CONSTANTS */
+/*************/
+
 enum {
     process_map_length = 2 ///< The length of the process map
 };
@@ -30,6 +34,10 @@ enum {
     process_register_number = 5,  ///< The number of registers to store
     process_stack_length    = 512 ///< The stack length to store
 };
+
+/*********/
+/* TYPES */
+/*********/
 
 /**
  * @brief The state of a process
@@ -58,6 +66,10 @@ typedef struct {
     uintptr_t stack[process_stack_length]; ///< The stack to store
 } process;
 
+/****************/
+/* CONSTRUCTORS */
+/****************/
+
 /**
  * @brief The constructor of \ref process
  *
@@ -73,6 +85,10 @@ void process_create(
     const char* __name,
     void (*__callback)()
 );
+
+/*****************/
+/* FIELD GETTERS */
+/*****************/
 
 /**
  * @brief Gets the \ref process PID
@@ -94,13 +110,9 @@ static inline int8_t process_pid(const process* __process)
 static inline const char* process_name(const process* __process)
     { return __process->name; }
 
-/**
- * @brief Gets the current running \ref process
- *
- * @return The current running \ref process
- */
-
-const process* process_current();
+/******************************/
+/* GLOBAL GETTERS AND SETTERS */
+/******************************/
 
 /**
  * @brief Sets a \ref process in the process map
@@ -112,10 +124,16 @@ const process* process_current();
 void process_add_to_map(size_t __index, process* __process);
 
 /**
- * @brief Schedules the next process
+ * @brief Gets the current running \ref process
+ *
+ * @return The current running \ref process
  */
 
-void process_schedule();
+const process* process_current();
+
+/***********/
+/* ACTIONS */
+/***********/
 
 /**
  * @brief Switches from an old context to a new one
@@ -125,5 +143,11 @@ void process_schedule();
  */
 
 void ctx_sw(uintptr_t* __old, uintptr_t* __new);
+
+/**
+ * @brief Schedules the next process
+ */
+
+void process_schedule();
 
 #endif // PROCESS_H
