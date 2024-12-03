@@ -26,7 +26,6 @@ enum {
 };
 
 enum {
-    process_name_length     = 32, ///< The length of a process name
     process_register_number = 5,  ///< The number of registers to store
     process_stack_length    = 512 ///< The stack length to store
 };
@@ -45,9 +44,9 @@ typedef enum {
  */
 
 typedef struct {
-    int8_t        pid;                       ///< The PID of the process
-    char          name[process_name_length]; ///< The name of the process
-    process_state state;                     ///< The state of the process
+    int8_t        pid;   ///< The PID of the process
+    const char*   name;  ///< The name of the process
+    process_state state; ///< The state of the process
 
     /**
      * @brief The registers to store
