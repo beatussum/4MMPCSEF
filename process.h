@@ -57,6 +57,15 @@ typedef struct {
     uintptr_t stack[process_stack_length]; ///< The stack to store
 } process;
 
+/**
+ * @brief Switches from an old context to a new one
+ *
+ * @param __old The old context
+ * @param __new The new context
+ */
+
+void ctx_sw(uintptr_t* __old, uintptr_t* __new);
+
 extern process process_map[process_map_length]; ///< The process map
 
 #endif // PROCESS_H
