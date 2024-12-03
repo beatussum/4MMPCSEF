@@ -20,6 +20,7 @@
 #define PROCESS_H
 
 #include "inttypes.h"
+#include "stddef.h"
 
 enum {
     process_map_length = 2 ///< The length of the process map
@@ -60,14 +61,61 @@ typedef struct {
 /**
  * @brief The constructor of \ref process
  *
+ * @param[out] __process The process to be created
  * @param[in] __pid The PID of the \ref process
  * @param[in] __name The name of the \ref process
  * @param[in] __callback The callback to use
- *
- * @return A constructed \ref process
  */
 
-process process_create(int8_t __pid, const char* __name, void (*__callback)());
+void process_create(
+    process* __process,
+    int8_t __pid,
+    const char* __name,
+    void (*__callback)()
+);
+
+/**
+ * @brief Gets the \ref process PID
+ *
+ * @param[in] __process The process in question
+ * @return The \ref process PID
+ */
+
+static inline int8_t process_pid(const process* __process)
+    { return __process->pid; }
+
+/**
+ * @brief Gets the \ref process name
+ *
+ * @param[in] __process The process in question
+ * @return The \ref process name
+ */
+
+static inline const char* process_name(const process* __process)
+    { return __process->name; }
+
+/**
+ * @brief Gets the current running \ref process
+ *
+ * @return The current running \ref process
+ */
+
+const process* process_current();
+
+/**
+ * @brief Sets a \ref process in the process map
+ *
+ * @param[in] __index The index in the process map
+ * @param[in] __process The process to set
+ */
+
+void process_add_to_map(size_t __index, process* __process);
+
+/**
+ * @brief Schedules the next process
+ */
+
+void process_schedule();
 
 /**
  * @brief Switches from an old context to a new one
@@ -77,7 +125,5 @@ process process_create(int8_t __pid, const char* __name, void (*__callback)());
  */
 
 void ctx_sw(uintptr_t* __old, uintptr_t* __new);
-
-extern process process_map[process_map_length]; ///< The process map
 
 #endif // PROCESS_H

@@ -18,14 +18,34 @@
 
 #include "process.h"
 
-process process_map[process_map_length] = {};
+static process* process_map[process_map_length] = {};
 
-process process_create(int8_t __pid, const char* __name, void (*__callback)())
+void process_create(
+    process* __process,
+    int8_t __pid,
+    const char* __name,
+    void (*__callback)()
+)
 {
-    process ret = { .pid = __pid, .name = __name };
+    *__process = (process) { .pid = __pid, .name = __name };
 
-    ret.registers[1] = (uintptr_t) &ret.stack[process_stack_length - 1];
-    ret.stack[process_stack_length - 1] = (uintptr_t) __callback;
+    __process->registers[1] =
+        (uintptr_t) &__process->stack[process_stack_length - 1];
 
-    return ret;
+    __process->stack[process_stack_length - 1] = (uintptr_t) __callback;
+}
+
+const process* process_current()
+    { return process_map[0]; }
+
+void process_add_to_map(size_t __index, process* __process)
+    { process_map[__index] = __process; }
+
+void process_schedule()
+{
+    process* tmp = process_map[0];
+    process_map[0] = process_map[1];
+    process_map[1] = tmp;
+
+    ctx_sw(process_map[1]->registers, process_map[0]->registers);
 }

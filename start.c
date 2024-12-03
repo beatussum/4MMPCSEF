@@ -24,29 +24,39 @@
 
 void idle()
 {
-    for (uint8_t i = 0; i != 3; ++i) {
-        printf("[idle] I am trying to hand over to proc1...\n");
-        ctx_sw(process_map[0].registers, process_map[1].registers);
-        printf("[idle] proc1 left me in charge.\n");
-    }
+    while (true) {
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
 
-    printf("[idle] I am halting the system.\n");
-    hlt();
+        process_schedule();
+    }
 }
 
 void proc_one()
 {
     while (true) {
-        printf("[proc1] idle left me in charge.\n");
-        printf("[proc1] I am trying to hand over to idle...\n");
-        ctx_sw(process_map[1].registers, process_map[0].registers);
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
+
+        process_schedule();
     }
 }
 
 void kernel_start(void)
 {
-    process_map[0] = process_create(1, "idle", &idle);
-    process_map[1] = process_create(2, "proc1", &proc_one);
+    process idle_process, proc_one_process;
+
+    process_create(&idle_process, 1, "idle", &idle);
+    process_create(&proc_one_process, 2, "proc_one", &proc_one);
+
+    process_add_to_map(0, &idle_process);
+    process_add_to_map(1, &proc_one_process);
 
     clear_screen();
     idle();
