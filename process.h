@@ -27,7 +27,7 @@
 /*************/
 
 enum {
-    process_map_length = 2 ///< The length of the process map
+    process_map_length = 6 ///< The length of the process map
 };
 
 enum {
@@ -73,18 +73,13 @@ typedef struct {
 /**
  * @brief The constructor of \ref process
  *
- * @param[out] __process The process to be created
- * @param[in] __pid The PID of the \ref process
  * @param[in] __name The name of the \ref process
  * @param[in] __callback The callback to use
+ *
+ * @return The PID of the constructed \ref process
  */
 
-void process_create(
-    process* __process,
-    int8_t __pid,
-    const char* __name,
-    void (*__callback)()
-);
+int8_t process_create(const char* __name, void (*__callback)());
 
 /*****************/
 /* FIELD GETTERS */
@@ -113,15 +108,6 @@ static inline const char* process_name(const process* __process)
 /******************************/
 /* GLOBAL GETTERS AND SETTERS */
 /******************************/
-
-/**
- * @brief Sets a \ref process in the process map
- *
- * @param[in] __index The index in the process map
- * @param[in] __process The process to set
- */
-
-void process_add_to_map(size_t __index, process* __process);
 
 /**
  * @brief Gets the current running \ref process

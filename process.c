@@ -17,6 +17,7 @@
 
 
 #include "process.h"
+#include "tinyalloc.h"
 
 /********************/
 /* GLOBAL VARIABLES */
@@ -24,34 +25,36 @@
 
 static process* process_map[process_map_length] = {};
 
+static process** process_current_process = &process_map[0];
+static size_t process_first_free = 0;
+
 /****************/
 /* CONSTRUCTORS */
 /****************/
 
-void process_create(
-    process* __process,
-    int8_t __pid,
-    const char* __name,
-    void (*__callback)()
-)
+int8_t process_create(const char* __name, void (*__callback)())
 {
-    *__process = (process) { .pid = __pid, .name = __name };
+    process* ret = malloc(sizeof(process));
 
-    __process->registers[1] =
-        (uintptr_t) &__process->stack[process_stack_length - 1];
+    if (ret != NULL) {
+        process_map[process_first_free++] = ret;
 
-    __process->stack[process_stack_length - 1] = (uintptr_t) __callback;
+        *ret = (process) { .pid = process_first_free, .name = __name };
+        ret->registers[1] = (uintptr_t) &ret->stack[process_stack_length - 1];
+        ret->stack[process_stack_length - 1] = (uintptr_t) __callback;
+
+        return process_first_free;
+    } else {
+        return -1;
+    }
 }
 
 /******************************/
 /* GLOBAL GETTERS AND SETTERS */
 /******************************/
 
-void process_add_to_map(size_t __index, process* __process)
-    { process_map[__index] = __process; }
-
 const process* process_current()
-    { return process_map[0]; }
+    { return *process_current_process; }
 
 /***********/
 /* ACTIONS */
@@ -59,9 +62,11 @@ const process* process_current()
 
 void process_schedule()
 {
-    process* tmp = process_map[0];
-    process_map[0] = process_map[1];
-    process_map[1] = tmp;
+    process* old = *(process_current_process++);
 
-    ctx_sw(process_map[1]->registers, process_map[0]->registers);
+    if (process_current_process == (process_map + process_map_length)) {
+        process_current_process = &process_map[0];
+    }
+
+    ctx_sw(old->registers, (*process_current_process)->registers);
 }

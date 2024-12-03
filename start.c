@@ -22,7 +22,7 @@
 #include "stdbool.h"
 #include "stdio.h"
 
-void idle()
+void one()
 {
     while (true) {
         printf(
@@ -35,7 +35,7 @@ void idle()
     }
 }
 
-void proc_one()
+void two()
 {
     while (true) {
         printf(
@@ -48,16 +48,67 @@ void proc_one()
     }
 }
 
-void kernel_start(void)
+void three()
 {
-    process idle_process, proc_one_process;
+    while (true) {
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
 
-    process_create(&idle_process, 1, "idle", &idle);
-    process_create(&proc_one_process, 2, "proc_one", &proc_one);
+        process_schedule();
+    }
+}
 
-    process_add_to_map(0, &idle_process);
-    process_add_to_map(1, &proc_one_process);
+void four()
+{
+    while (true) {
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
+
+        process_schedule();
+    }
+}
+
+void five()
+{
+    while (true) {
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
+
+        process_schedule();
+    }
+}
+
+void six()
+{
+    while (true) {
+        printf(
+            "[%s] pid = %i\n",
+            process_name(process_current()),
+            process_pid(process_current())
+        );
+
+        process_schedule();
+    }
+}
+
+void kernel_start()
+{
+    process_create("one", &one);
+    process_create("two", &two);
+    process_create("three", &three);
+    process_create("four", &four);
+    process_create("five", &five);
+    process_create("six", &six);
 
     clear_screen();
-    idle();
+    one();
 }
