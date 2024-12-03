@@ -19,19 +19,28 @@
 #include "console.h"
 #include "cpu.h"
 #include "process.h"
+#include "stdbool.h"
 #include "stdio.h"
 
 void idle()
 {
-    printf("[idle] I am trying to hand over to proc1...\n");
-    ctx_sw(process_map[0].registers, process_map[1].registers);
+    for (uint8_t i = 0; i != 3; ++i) {
+        printf("[idle] I am trying to hand over to proc1...\n");
+        ctx_sw(process_map[0].registers, process_map[1].registers);
+        printf("[idle] proc1 left me in charge.\n");
+    }
+
+    printf("[idle] I am halting the system.\n");
+    hlt();
 }
 
 void proc_one()
 {
-    printf("[proc1] idle left me in charge.\n");
-    printf("[proc1] I am halting the system.\n");
-    hlt();
+    while (true) {
+        printf("[proc1] idle left me in charge.\n");
+        printf("[proc1] I am trying to hand over to idle...\n");
+        ctx_sw(process_map[1].registers, process_map[0].registers);
+    }
 }
 
 void kernel_start(void)
