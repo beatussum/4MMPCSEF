@@ -108,6 +108,8 @@ process* process_current()
 /* ACTIONS */
 /***********/
 
+#include <stdio.h>
+
 void process_schedule()
 {
     process *old = process_list_pop(&process_process_list);

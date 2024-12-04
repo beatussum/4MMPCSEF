@@ -22,6 +22,7 @@
 #include "cpu.h"
 #include "debug.h"
 #include "interrupt.h"
+#include "process.h"
 
 static time_t run_time = 0;
 
@@ -38,11 +39,18 @@ void update_run_time_isr()
 {
     interrupt_acknowledge();
     run_time += 20;
+    process_schedule();
 }
 
 void write_run_time()
 {
-    write_time(run_time);
+    while (true) {
+        write_time(run_time);
+
+        sti();
+        hlt();
+        cli();
+    }
 }
 
 void write_time(time_t __time)

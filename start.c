@@ -18,9 +18,11 @@
 
 #include "console.h"
 #include "cpu.h"
+#include "interrupt.h"
 #include "process.h"
 #include "stdbool.h"
 #include "stdio.h"
+#include "time.h"
 
 void one()
 {
@@ -31,7 +33,9 @@ void one()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -44,7 +48,9 @@ void two()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -57,7 +63,9 @@ void three()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -70,7 +78,9 @@ void four()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -83,7 +93,9 @@ void five()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -96,7 +108,9 @@ void six()
             process_pid(process_current())
         );
 
-        process_schedule();
+        sti();
+        hlt();
+        cli();
     }
 }
 
@@ -108,7 +122,13 @@ void kernel_start()
     process_create("four", &four);
     process_create("five", &five);
     process_create("six", &six);
+    process_create("write_run_time", &write_run_time);
 
     clear_screen();
+    set_clock_frequency(50);
+    init_isr(32, &update_run_time_isr_wrapper);
+    mask_irq(0, false);
+    sti();
+
     one();
 }
